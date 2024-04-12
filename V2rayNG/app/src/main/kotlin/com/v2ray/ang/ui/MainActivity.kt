@@ -79,7 +79,7 @@ class MainActivity(val mainViewModel: HiddifyMainViewModel) : BaseFragment(){
         super.onCreateView(inflater, container, savedInstanceState)
 
 //        (requireActivity() as BaseActivity).supportActionBar?.subtitle="Dd"
-        activity?.registerReceiver(receiver, IntentFilter(AppConfig.BROADCAST_ACTION_UPDATE_UI))//hiddify
+        activity?.registerReceiver(receiver, IntentFilter(AppConfig.BROADCAST_ACTION_UPDATE_UI), Context.RECEIVER_EXPORTED)//hiddify
         binding = ActivityMainBinding.inflate(layoutInflater)
         mainViewModel.subscriptionId.observe(this){
             onSelectSub(it,true)
