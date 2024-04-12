@@ -20,6 +20,7 @@ import com.v2ray.ang.R
 import com.v2ray.ang.dto.ERoutingMode
 import com.v2ray.ang.ui.HiddifyMainActivity
 import com.v2ray.ang.ui.HomeActivity
+import android.net.ConnectivityManager
 import com.v2ray.ang.util.MmkvManager
 import com.v2ray.ang.util.MyContextWrapper
 import com.v2ray.ang.util.Utils
@@ -194,18 +195,19 @@ class V2RayVpnService : VpnService(), ServiceControl {
                 builder.addRoute(addr[0], addr[1].toInt())
             }
         } else {
-            builder.addRoute("0.0.0.0", 0)
+            builder.addRoute("64:ff9b::", 96)
         }
 
+	builder.addAddress(PRIVATE_VLAN6_CLIENT, 126)
         if (settingsStorage?.decodeBool(AppConfig.PREF_PREFER_IPV6) == true) {
-            builder.addAddress(PRIVATE_VLAN6_CLIENT, 126)
             if (routingMode == ERoutingMode.BYPASS_LAN.value || routingMode == ERoutingMode.BYPASS_LAN_MAINLAND.value) {
                 builder.addRoute("2000::", 3) //currently only 1/8 of total ipV6 is in use
             } else {
-                builder.addRoute("::", 0)
+                // builder.addRoute("::", 0)
             }
         }
 
+/*
         if (settingsStorage?.decodeBool(AppConfig.PREF_LOCAL_DNS_ENABLED) == true) {
             builder.addDnsServer(PRIVATE_VLAN4_ROUTER)
         } else {
@@ -216,6 +218,13 @@ class V2RayVpnService : VpnService(), ServiceControl {
                         }
                     }
         }
+*/
+
+	builder.addRoute("64:ff9b::", 96)
+        builder.addRoute("2000::", 123)
+        builder.addRoute("2001:470:1:18::", 64)
+        builder.addRoute("2001:4860:4860::", 48)
+	builder.addDnsServer("64:ff9b::127.9.9.9")
 
         builder.setSession(V2RayServiceManager.currentConfig?.remarks.orEmpty())
 

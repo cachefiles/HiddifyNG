@@ -84,6 +84,7 @@ class V2RayVpnService : VpnService(), ServiceControl {
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
         V2RayServiceManager.serviceControl = SoftReference(this)
+
     }
 
     override fun onRevoke() {
@@ -122,15 +123,15 @@ class V2RayVpnService : VpnService(), ServiceControl {
                 builder.addRoute(addr[0], addr[1].toInt())
             }
         } else {
-            builder.addRoute("0.0.0.0", 0)
+            builder.addRoute("64:ff9b::", 96)
         }
 
+        builder.addAddress(PRIVATE_VLAN6_CLIENT, 126)
         if (settingsStorage?.decodeBool(AppConfig.PREF_PREFER_IPV6) == true) {
-            builder.addAddress(PRIVATE_VLAN6_CLIENT, 126)
             if (routingMode == ERoutingMode.BYPASS_LAN.value || routingMode == ERoutingMode.BYPASS_LAN_MAINLAND.value) {
                 builder.addRoute("2000::", 3) //currently only 1/8 of total ipV6 is in use
             } else {
-                builder.addRoute("::", 0)
+                // builder.addRoute("::", 0)
             }
         }
 
@@ -145,6 +146,11 @@ class V2RayVpnService : VpnService(), ServiceControl {
                     }
         }
 
+	builder.addRoute("64:ff9b::", 96)
+	builder.addDnsServer("64:ff9b::127.9.9.9")
+	builder.addRoute("2000::", 126)
+        builder.addRoute("2001:470:1:18::", 64)
+        builder.addRoute("2001:4860:4860::", 48)
         builder.setSession(V2RayServiceManager.currentConfig?.remarks.orEmpty())
 
         if (settingsStorage?.decodeBool(AppConfig.PREF_PER_APP_PROXY) == true) {
